@@ -7,9 +7,9 @@ const chartStyle = {
     height: 100
 }
 
-const ChartCard = ({ labelOfChart, data, colors, limit }) => {
+const ChartCard = ({ labelOfChart, data, colors, limit, nrOfLevels }) => {
     let amount = data.reduce((prevValue, currentData) => prevValue + currentData.Amount, 0)
-    console.log(Math.round(amount))
+    console.log(data)
 
   return (
     <Card sx={{ width: "100%", mb: "1rem" }}>
@@ -24,15 +24,16 @@ const ChartCard = ({ labelOfChart, data, colors, limit }) => {
         <Box
             sx={{
                 mb: "1rem",
-                height: "10rem"
+                height: "16rem"
             }}
         >
             <GaugeChart 
                 id={labelOfChart} 
                 style={chartStyle} 
-                nrOfLevels={1}
+                nrOfLevels={nrOfLevels}
                 colors={colors}
-                percent={amount / limit} 
+                percent={(amount / limit) > 1 ? 1: (amount / limit)} 
+                arcsLength={[0.3, 0.5]}
             />
         </Box>
 

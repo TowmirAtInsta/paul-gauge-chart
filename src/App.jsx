@@ -22,7 +22,7 @@ function App() {
     });
 
     ZOHO.embeddedApp.init().then(() => {
-      ZOHO.CRM.UI.Resize({height: "600", width:"1300"});
+      ZOHO.CRM.UI.Resize({height: "800", width:"1300"});
     });
   }, [])
 
@@ -34,13 +34,32 @@ function App() {
     return `${year}-${month + 1 < 10 ? `0${month + 1}` : month + 1}-${days < 10 ? `0${days}` : days}`;
   }
 
-todayFormat()
+  const getCurrentMonth = () => {
+    const date = new Date()
+
+    switch(date.getMonth()) {
+      case 0: return 'Jan';
+      case 1: return 'Feb';
+      case 2: return 'Mar';
+      case 3: return 'Apr';
+      case 4: return 'May';
+      case 5: return 'Jun';
+      case 6: return 'Jul';
+      case 7: return 'Aug';
+      case 8: return 'Sep';
+      case 9: return 'Oct';
+      case 10: return 'Nov';
+      default: return 'Dec';
+    }
+  }
+
+
 
   useEffect(() => {
     const fetchData = async () => {
       if(initialized) {
         const salesGoalResp = await ZOHO.CRM.API.getRecord({Entity: entity, RecordID: entityId}) //get the record data for current sales goal
-        console.log(salesGoalResp?.data?.[0]?.Owner.name)
+        console.log(salesGoalResp)
         const current_user = salesGoalResp?.data?.[0]?.Owner.id;
         setCurrentUser(salesGoalResp) // set the name of the owner of the goal
 
@@ -85,20 +104,21 @@ todayFormat()
       >
         <Box
           sx={{
-            width: "32%"
+            width: "48%"
           }}
         >
           <ChartCard 
-            labelOfChart="Yearly Target"
+            labelOfChart="Year To Date"
             data={targetDeals}
             colors={["#FF5F6D", "#FFC371"]}
             limit={currentUser?.data?.[0]?.Annual}
+            nrOfLevels={2}
           />
         </Box>
 
         <Box
           sx={{
-            width: "32%",
+            width: "48%",
           }}
         >
           <ChartCard 
@@ -107,22 +127,8 @@ todayFormat()
               return (new Date(deal.Decision_Date) >= new Date('2022-12-31') &&  new Date(deal.Decision_Date) <= new Date('2023-02-01'))
             })}
             colors={["#FF5F6D", "#FFC371"]}
-            limit={currentUser?.data?.[0]?.Dec}
-          />
-        </Box>
-
-        <Box
-          sx={{
-            width: "32%"
-          }}
-        >
-          <ChartCard 
-            labelOfChart="Year to Date"
-            data={targetDeals.filter(deal => {
-              return (new Date(deal.Decision_Date) >= new Date('2022-11-30') &&  new Date(deal.Decision_Date) <= new Date(`${todayFormat()}`))
-            })}
-            colors={["#FF5F6D", "#FFC371"]}
-            limit={currentUser?.data?.[0]?.Dec}
+            limit={currentUser?.data?.[0]?.[getCurrentMonth()]}
+            nrOfLevels={1}
           />
         </Box>
       </Box>
